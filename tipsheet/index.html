@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Getting the most out of Evidently</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&amp;family=Roboto+Mono:wght@400;500&amp;display=swap">
+<style>
+:root { --gold:#FFCD00; --ink:#0A0A0B; --gray-600:#62666A; --line:#E6E6E6; --paper:#FFFFFF; --paper-warm:#F7F7F5; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--paper); color:var(--ink); font:400 17px/1.65 Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif; }
+.wrap { max-width:44rem; margin:0 auto; padding:56px 24px 80px; }
+header { border-bottom:2px solid var(--gold); padding-bottom:28px; margin-bottom:36px; }
+.eyebrow { margin:0 0 16px; font-size:15px; line-height:1.5; letter-spacing:.12em; color:var(--gray-600); }
+h1 { font-size:42px; line-height:1.14; letter-spacing:-.025em; font-weight:300; margin:0 0 20px; }
+.standfirst { margin:0; color:var(--gray-600); }
+h2 { margin:48px 0 18px; font-size:26px; line-height:1.25; letter-spacing:-.015em; font-weight:500; }
+h3 { font-size:19px; font-weight:500; line-height:1.4; }
+p { margin:0 0 20px; }
+strong { font-weight:600; }
+a { color:#00558C; text-underline-offset:.2em; overflow-wrap:anywhere; }
+code, pre { font-family:"Roboto Mono",ui-monospace,SFMono-Regular,Menlo,monospace; }
+code { font-size:1em; overflow-wrap:anywhere; }
+footer { border-top:1px solid var(--line); margin-top:52px; padding-top:24px; color:var(--gray-600); }
+footer p { margin:0; }
+ul { margin:0; padding-left:22px; }
+li { padding-left:4px; margin-bottom:18px; }
+.numbered { list-style:none; counter-reset:item; padding:0; margin:0; }
+.numbered li { position:relative; padding:22px 0 22px 46px; margin:0; border-top:1px solid var(--line); }
+.numbered li:last-child { border-bottom:1px solid var(--line); }
+.numbered li::before { counter-increment:item; content:counter(item, decimal-leading-zero); position:absolute; left:0; top:24px; font:500 17px/1.6 "Roboto Mono",monospace; color:var(--gray-600); }
+.close { font-size:24px; line-height:1.3; font-weight:500; margin:30px 0; }
+.phone-steps { list-style:none; margin:32px 0 0; padding:0; }
+.phone-steps > li { margin:0 0 54px; padding:0; }
+.phone-steps figure { margin:0; }
+.phone-steps figcaption { margin:18px auto 0; width:100%; max-width:320px; text-align:center; font-size:19px; font-weight:500; line-height:1.4; }
+.step-number { display:block; margin-bottom:7px; color:var(--gray-600); font:500 15px/1.4 "Roboto Mono",monospace; }
+.single-phone-device { position:relative; width:280px; max-width:100%; margin:0 auto; border:8px solid #1E1F22; border-radius:26px; background:#0A0A0B; padding:7px; }
+.single-phone-device::before { position:absolute; left:50%; top:4px; z-index:2; width:55px; height:5px; border-radius:999px; background:#1E1F22; content:""; transform:translateX(-50%); }
+.single-phone-screen { position:relative; width:100%; aspect-ratio:1206/2622; overflow:hidden; border-radius:15px; background:white; }
+.cleared-phone-screen, .cleared-phone-screen img { display:block; width:100%; height:100%; }
+.cleared-phone-screen { position:relative; }
+.cleared-phone-screen img { object-fit:contain; }
+.phone-focus { position:absolute; border:2px solid var(--gold); pointer-events:none; }
+.focus-edit .phone-focus { left:68%; top:70%; width:25%; height:7%; }
+.focus-prompt .phone-focus { left:5%; top:60%; width:90%; height:17%; }
+.drawn-phone { position:absolute; inset:0; background:white; padding:18px 12px; color:var(--ink); }
+.drawn-phone h3, .drawn-phone p { margin:0; }
+.drawn-phone-launch { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+.drawn-phone-launch h3 { margin-top:24px; font-size:24px; line-height:1.08; }
+.drawn-nabla-mark { display:flex; gap:6px; align-items:end; height:44px; }
+.drawn-nabla-mark span { width:7px; background:var(--ink); }
+.drawn-nabla-mark span:nth-child(1) { height:18px; }
+.drawn-nabla-mark span:nth-child(2) { height:32px; }
+.drawn-nabla-mark span:nth-child(3) { height:44px; }
+.drawn-phone-button { display:grid; place-items:center; width:100%; min-height:48px; margin-top:30px; border:1px solid var(--ink); border-radius:6px; background:var(--ink); color:white; font-size:20px; }
+.drawn-phone-header { position:relative; display:flex; align-items:center; justify-content:center; min-height:50px; border-bottom:1px solid #d9dce4; text-align:center; }
+.drawn-phone-header strong { min-width:0; font-size:18px; font-weight:500; line-height:1.1; }
+.drawn-menu-icon { position:absolute; left:0; top:16px; display:grid; gap:4px; }
+.drawn-menu-icon i { display:block; width:18px; height:2px; background:var(--ink); }
+.drawn-phone-menu .drawn-phone-header { padding-left:24px; }
+.drawn-phone-menu p { margin-top:32px; font-size:24px; font-weight:500; }
+.drawn-menu-row { height:38px; margin-top:14px; border:1px solid #d9dce4; border-radius:5px; }
+.drawn-menu-row.is-selected { border-left:4px solid var(--gold); }
+.drawn-phone-summary label { display:block; margin-top:18px; font-size:17px; }
+.drawn-field { margin-top:8px; border:1px solid #d9dce4; border-radius:5px; padding:12px 9px; font-size:17px; line-height:1.2; }
+.drawn-rule { height:2px; margin-top:20px; background:var(--gold); }
+.drawn-phone-save { text-align:center; }
+.drawn-saved-mark { display:grid; place-items:center; width:64px; height:64px; margin:42px auto 14px; border:2px solid var(--gold); border-radius:50%; color:var(--ink); font-size:34px; }
+.drawn-phone-save p { font-size:19px; }
+.drawn-phone-save .drawn-phone-button { margin-top:20px; background:var(--gold); color:var(--ink); }
+.recreation-credit { margin:9px auto 0; text-align:center; font-size:15px; color:var(--gray-600); }
+#copy-prompt { border:1px solid var(--ink); border-radius:6px; background:var(--ink); color:white; min-height:48px; padding:12px 18px; font:500 17px/1.4 Roboto,Arial,sans-serif; cursor:pointer; }
+#copy-prompt:focus-visible, #consent-prompt:focus-visible { outline:3px solid var(--gold); outline-offset:4px; }
+#copy-prompt[data-copy-state="copied"]::after { content:" ✓"; }
+#consent-prompt { margin:18px 0 0; padding:22px 18px; white-space:pre-wrap; overflow-wrap:anywhere; word-break:normal; font-size:15px; line-height:1.65; background:var(--paper-warm); border:1px solid var(--line); border-radius:6px; }
+@media (max-width:480px) { .wrap { padding:32px 24px 64px; } h1 { font-size:34px; } h2 { font-size:25px; } }
+</style></head><body><main class="wrap"><header>
+<p class="eyebrow">UNIVERSITY OF IOWA HEALTH CARE · DEPARTMENT OF ANESTHESIA</p><h1>Getting the most out of Evidently</h1>
+<p class="standfirst">Evidently is the second tab in Chart Review. It reads the whole chart, including outside records and the media tab, and writes summaries that link back to the notes they came from. Everything below takes a few minutes once.</p></header>
+<section><h2>Where it lives</h2><p>Open any chart. In Chart Review, the Evidently tab sits beside the others. The Overview shows summary cards that refresh themselves; the timestamp on each card tells you when. Every card links to the notes it read, and each has a copy icon.</p></section>
+<section><h2>Eight things worth knowing</h2><ol class="numbered"><li><strong>Manage Layout.</strong> Choose which Collection appears on your Overview, drag the cards into the order you want, then Save.</li><li><strong>Add summaries.</strong> Inside Manage Layout, open the library panel to tick or untick summaries. Changes save on their own; Done closes the panel.</li><li><strong>Custom summary.</strong> Click + Custom summary, write a rough prompt in plain words, and click Polish to turn it into a clean one. Preview, adjust, then Save and close. It lands in your current Collection.</li><li><strong>Edit anything.</strong> The pencil on a card opens its detail view: title, description, prompt, which Collections it belongs to, and whether it is shared with UIHC.</li><li><strong>Your library.</strong> Click the Summaries header on the Overview, or find Summaries in the start menu. Manage My Summaries lists yours; search and filter to find one quickly.</li><li><strong>The UIHC library.</strong> Browse summaries colleagues have shared. Preview the output, add it to a Collection, or Make a Copy to make it yours.</li><li><strong>Ask Evidently.</strong> Ask one question about this chart. The answer comes with citations; click one to read the source note.</li><li><strong>My Patients.</strong> Run a summary across a list without opening each chart.</li></ol></section>
+<section><h2>Add the anesthesia huddle</h2><p>In the UIHC library, search for the anesthesia huddle and add it to your Overview. From then on it is on every chart you open: the next procedure, a short narrative, the systems in a fixed order, the core lab table with Not available where a result is missing, and the count of records and data points it read.</p></section>
+<section><h2>The vendor&#x27;s tip sheet</h2><p>Evidently&#x27;s own tip sheet, Summary Management, is available inside Epic. <code>[[PRESENTER]]</code> decides whether the PDF may be re-hosted on this page; until then this page describes the same steps in our own words.</p></section>
+<footer><p>Decision support, not a decision. Every summary is a prompt to review the chart, and you sign. Questions: alfredo-camargorodrigues@uiowa.edu</p></footer>
+</main></body></html>
